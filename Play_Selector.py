@@ -8,15 +8,12 @@ from std_msgs.msg import Int8
 from utils.geometry import Vector2D
 from utils.config import *
 from tactics import TGoalie
-from tactics import TestTac
 from tactics import TPosition
 from tactics import TPrimaryDefender
 from tactics import TLDefender
 from tactics import TRDefender
 from tactics import TDTP,TAttacker
 from tactics import TTestIt
-from tactics import TPass
-from tactics import Tmyplayer
 
 from plays import pStall
 from plays import DTP_Play
@@ -28,7 +25,6 @@ start_time = 0
 goalie_tac = None
 LDefender_tac = None
 RDefender_tac = None
-my_tac = None
 cur_goalie = 0
 
 def select_play(state):
@@ -88,17 +84,6 @@ def RDefender_callback(state):
 		RDefender_tac = TRDefender.TRDefender(RDefender_id,state)
 	RDefender_tac.execute(state,pub)
 
-def planner_callback(state):
-	print(" incoming planner_callback")
-	global pub
-	bot_id = 0
-	ballPos = Vector2D(state.ballPos.x, state.ballPos.y)
-	botpos = Vector2D(state.homePos[bot_id].x,state.homePos[bot_id].y)
-	print("dist is ",ballPos.dist(botpos))
-	new = TestTac.TestTac(bot_id,state)
-	new.execute(state,pub)
-	print(" outgoing planner_callback")
-
 def bs_callback(state):
 	global cur_play,start_time
 	state.our_goalie = 0
@@ -122,26 +107,16 @@ def debug_subscriber(state):
 	cur_tactic = TTestIt.TTestIt(attacker_id,state)
 	cur_tactic.execute(state,pub)
 
-def mycallback(state):
-	print("Its me")
-	global pub, my_tac
-	bot_id = 0
-	if my_tac == None:
-		my_tac = Tmyplayer.Tmyplayer(bot_id, state)
-	my_tac.execute(state,pub)
-
 if __name__=='__main__':
     global pub
     print "Initializing the node "
     rospy.init_node('play_py_node',anonymous=False)
     pub = rospy.Publisher('/grsim_data', gr_Commands, queue_size=1000)
-    #rospy.Subscriber('/belief_state', BeliefState, bs_callback, queue_size=1000)
+    # rospy.Subscriber('/belief_state', BeliefState, bs_callback, queue_size=1000)
     # rospy.Subscriber('/belief_state', BeliefState, goalKeeper_callback, queue_size=1000)
     # rospy.Subscriber('/belief_state', BeliefState, debug_subscriber, queue_size=1000)
-    #rospy.Subscriber('/belief_state', BeliefState, LDefender_callback, queue_size=1000)
-    #rospy.Subscriber('/belief_state', BeliefState, planner_callback, queue_size=1000)
-    #rospy.Subscriber('/belief_state', BeliefState, RDefender_callback, queue_size=1000)
-    #rospy.Subscriber('/belief_state', BeliefState, attacker_callback, queue_size=1000)
-    rospy.Subscriber('/belief_state', BeliefState, mycallback, queue_size = 1000)
+    rospy.Subscriber('/belief_state', BeliefState, LDefender_callback, queue_size=1000)
+    # rospy.Subscriber('/belief_state', BeliefState, RDefender_callback, queue_size=1000)
+    # rospy.Subscriber('/belief_state', BeliefState, attacker_callback, queue_size=1000)
     #rospy.Subscriber('/ref_play', Int8, ref_callback, queue_size=1000)
     rospy.spin()

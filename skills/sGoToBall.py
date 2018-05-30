@@ -6,8 +6,6 @@ from navigation_py.wrapperpy import *
 from navigation_py.obstacle import Obstacle
 from utils.geometry import *
 from math import exp
-
-
 POINTPREDICTIONFACTOR = 2
 
 

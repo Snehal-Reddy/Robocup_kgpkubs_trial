@@ -25,7 +25,7 @@ def debug(param, state, bot_pos, target_pos, nextWP, nextNWP, speed, theta, omeg
 
 
 def execute(param,state,bot_id, pub):
-    point = Vector2D(int(param.GoToPointP.x),int(param.GoToPointP.y))
+    point = Vector2D(int(param.GoWithDribbleP.x),int(param.GoWithDribbleP.y))
     myPos = Vector2D(int(state.homePos[bot_id].x),int(state.homePos[bot_id].y))
     distance = point.dist(myPos)
     MAX_BOT_SPEED = 0.7*1800
